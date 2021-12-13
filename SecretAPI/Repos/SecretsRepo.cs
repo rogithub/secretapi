@@ -24,7 +24,7 @@ public class SecretsRepo : ISecretsRepo
 
     public Task<Secret> GetOne(Guid userId, Guid id)
     {
-	string sql = "SELECT Id,UserId,Content,DateCreated,DateModified FROM Secretes WHERE Id=@Id AND UserId=@UserId;";
+	string sql = "SELECT Id,UserId,Content,DateCreated,DateModified FROM Secrets WHERE Id=@Id AND UserId=@UserId;";
 	var cmd = sql.ToCmd
 	(
 	    "@Id".ToParam(DbType.String, id.ToString()),
@@ -36,7 +36,7 @@ public class SecretsRepo : ISecretsRepo
 
     public Task<IEnumerable<Secret>> GetAll(Guid userId)
     {
-	string sql = "SELECT Id,UserId,Content,DateCreated,DateModified FROM Secretes WHERE UserId=@UserId;";
+	string sql = "SELECT Id,UserId,Content,DateCreated,DateModified FROM Secrets WHERE UserId=@UserId;";
 	var cmd = sql.ToCmd
 	(
 	    "@UserId".ToParam(DbType.String, userId.ToString())

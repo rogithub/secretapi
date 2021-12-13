@@ -15,11 +15,11 @@ builder.Services.AddSwaggerGen();
 
 
 // IoC
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetSection("DefaultConnection").Value;
 builder.Services.AddTransient<IDbAsync>((svc) => {
     var current = Directory.GetCurrentDirectory();    
-    var path = Path.Combine(current, connectionString);
-    return new Database(path);
+    var path = Path.Combine(current, connectionString);    
+    return new Database(string.Format("Data Source={0}; Version=3;", path));
 });
 builder.Services.AddScoped<ISecretsRepo, SecretsRepo>();
 

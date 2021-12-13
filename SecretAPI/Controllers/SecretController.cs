@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SecretAPI.Models;
+using SecretAPI.Repos;
+using System.Threading.Tasks;
 
 namespace SecretAPI.Controllers;
 
@@ -8,15 +10,17 @@ namespace SecretAPI.Controllers;
 public class SecretController : ControllerBase
 {
     private readonly ILogger<SecretController> _logger;
+    private readonly ISecretsRepo _secretsRepo;
 
-    public SecretController(ILogger<SecretController> logger)
+    public SecretController(ILogger<SecretController> logger, ISecretsRepo secretsRepo)
     {
         _logger = logger;
+	_secretsRepo = secretsRepo;
     }
 
-    [HttpGet(Name = "GetSecret")]
-    public IEnumerable<Secret> Get()
+    [HttpGet("{user:guid}")]
+    public Task<IEnumerable<Secret>> GetAll()
     {
-        throw new NotImplementedException();
+        return _secretsRepo.GetAll(Guid.NewGuid());
     }
 }
