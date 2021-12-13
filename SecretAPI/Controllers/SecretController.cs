@@ -30,7 +30,7 @@ public class SecretController : ControllerBase
 	    return BadRequest();
 	}
 
-	return CreatedAtAction(nameof(GetOne), new { user = secret.UserId, id = secret.Id }, secret);
+	return CreatedAtAction(nameof(GetOne), new { user = secret.UserId, secret = secret.Id }, secret);
     }
 
     [HttpPut]
