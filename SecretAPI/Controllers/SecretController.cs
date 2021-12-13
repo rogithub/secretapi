@@ -69,4 +69,19 @@ public class SecretController : ControllerBase
 	return Ok(it);
     }
 
+    [HttpDelete("{user:guid}/{secret:guid}")]
+    [ProducesResponseType(StatusCodes.Status410Gone)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid user, Guid secret)
+    {        
+        var it = await _secretsRepo.GetOne(user, secret);
+	if (it == null)
+	{
+	    return NotFound();
+	}
+
+	await _secretsRepo.Delete(user, secret);
+	return StatusCode(StatusCodes.Status410Gone);
+    }
+
 }
