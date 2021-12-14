@@ -45,7 +45,7 @@ public class UsersRepo : IUsersRepo
 	string sql = "SELECT Id,Username,DateCreated FROM Users WHERE Username=@Username;";
 	var cmd = sql.ToCmd
 	(
-	    "@Id".ToParam(DbType.String, username)
+	    "@Username".ToParam(DbType.String, username)
 	);
 
 	return Db.GetOneRow(cmd, GetData);

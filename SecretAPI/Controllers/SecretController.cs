@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SecretAPI.Models;
 using SecretAPI.Repos;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SecretAPI.Controllers;
@@ -20,19 +21,31 @@ public class SecretController : ControllerBase
 	_secretsRepo = secretsRepo;
     }
 
+    private Guid GetUserId()
+    {
+	var identity = HttpContext.User.Identity as ClaimsIdentity;	
+	if (identity == null) return Guid.Empty;
+
+	var claim = identity.FindFirst("Id");
+	if (claim == null) return Guid.Empty;	
+
+	return Guid.Parse(claim.Value);
+    }
+
     
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(Secret secret)
     {
+	secret.UserId = GetUserId();
         var value = await _secretsRepo.Create(secret);
 	if (value != 1)
 	{
 	    return BadRequest();
 	}
 
-	return CreatedAtAction(nameof(GetOne), new { user = secret.UserId, secret = secret.Id }, secret);
+	return CreatedAtAction(nameof(GetOne), new { secret = secret.Id }, secret);
     }
 
     [HttpPut]
@@ -40,7 +53,8 @@ public class SecretController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(Secret secret)
     {
-	var it = await _secretsRepo.GetOne(secret.UserId, secret.Id);
+	secret.UserId = GetUserId();
+	var it = await _secretsRepo.GetOne(GetUserId(), secret.Id);
 	if (it == null)
 	{
 	    return NotFound();
@@ -51,18 +65,18 @@ public class SecretController : ControllerBase
     }
 
 
-    [HttpGet("{user:guid}")]
-    public Task<IEnumerable<Secret>> GetAll(Guid user)
+    [HttpGet()]
+    public Task<IEnumerable<Secret>> GetAll()
     {
-        return _secretsRepo.GetAll(user);
+        return _secretsRepo.GetAll(GetUserId());
     }
 
-    [HttpGet("{user:guid}/{secret:guid}")]
+    [HttpGet("{secret:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetOne(Guid user, Guid secret)
+    public async Task<IActionResult> GetOne(Guid secret)
     {        
-        var it = await _secretsRepo.GetOne(user, secret);
+        var it = await _secretsRepo.GetOne(GetUserId(), secret);
 	if (it == null)
 	{
 	    return NotFound();
@@ -71,18 +85,18 @@ public class SecretController : ControllerBase
 	return Ok(it);
     }
 
-    [HttpDelete("{user:guid}/{secret:guid}")]
+    [HttpDelete("{secret:guid}")]
     [ProducesResponseType(StatusCodes.Status410Gone)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(Guid user, Guid secret)
+    public async Task<IActionResult> Delete(Guid secret)
     {        
-        var it = await _secretsRepo.GetOne(user, secret);
+        var it = await _secretsRepo.GetOne(GetUserId(), secret);
 	if (it == null)
 	{
 	    return NotFound();
 	}
 
-	await _secretsRepo.Delete(user, secret);
+	await _secretsRepo.Delete(GetUserId(), secret);
 	return StatusCode(StatusCodes.Status410Gone);
     }
 
