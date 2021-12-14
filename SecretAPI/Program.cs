@@ -1,8 +1,13 @@
 using System;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.IO;
 using Ro.SQLite.Data;
 using SecretAPI.Repos;
 using Microsoft.Extensions.Configuration;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +16,30 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options => {
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+	Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
+	In = ParameterLocation.Header,
+	Name = "Authorization",
+	        Type = SecuritySchemeType.ApiKey
+    });
 
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+	        options.TokenValidationParameters = new TokenValidationParameters
+		{
+		    ValidateIssuerSigningKey = true,
+		    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+								.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+		    ValidateIssuer = false,
+		    ValidateAudience = false
+		};
+    });
 
 // IoC
 var connectionString = builder.Configuration.GetSection("DefaultConnection").Value;
@@ -22,6 +49,7 @@ builder.Services.AddTransient<IDbAsync>((svc) => {
     return new Database(string.Format("Data Source={0}; Version=3;", path));
 });
 builder.Services.AddScoped<ISecretsRepo, SecretsRepo>();
+builder.Services.AddScoped<IUsersRepo, UsersRepo>();
 
 
 var app = builder.Build();
@@ -34,6 +62,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

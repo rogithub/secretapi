@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using SecretAPI.Models;
 using SecretAPI.Repos;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SecretAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class SecretController : ControllerBase
@@ -18,7 +20,7 @@ public class SecretController : ControllerBase
 	_secretsRepo = secretsRepo;
     }
 
-
+    
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
