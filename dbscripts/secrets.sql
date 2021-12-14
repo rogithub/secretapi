@@ -1,7 +1,9 @@
 BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "Users" (
        "Id"  TEXT NOT NULL UNIQUE,
-       "Password"	   TEXT,
+       "Username"	   TEXT NOT NULL UNIQUE, 
+       "PasswordHash"	   TEXT,
+       "PasswordSalt"	   TEXT,
        PRIMARY KEY("Id")
 );
 CREATE TABLE IF NOT EXISTS "Secrets" (
