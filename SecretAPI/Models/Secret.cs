@@ -34,6 +34,12 @@ public class Secret
 	this.DateCreated = DateTime.Now;
 	this.DateModified = DateTime.Now;
     }
+
+    public Secret(SecretUpload m) : this()
+    {
+	this.Id = m.Id;
+	this.Content = m.Content;
+    }
     
     public Guid Id { get; set; }
 
@@ -45,4 +51,16 @@ public class Secret
 
     public string Content { get; set; }
 
+}
+
+public class SecretUpload
+{
+    public SecretUpload()
+    {
+	this.Id = Guid.NewGuid();
+	this.Content = String.Empty;
+    }
+    
+    public Guid Id { get; set; }
+    public string Content { get; set; }
 }

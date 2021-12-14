@@ -36,8 +36,9 @@ public class SecretController : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create(Secret secret)
+    public async Task<IActionResult> Create(SecretUpload model)
     {
+        Secret secret = new Secret(model);
 	secret.UserId = GetUserId();
         var value = await _secretsRepo.Create(secret);
 	if (value != 1)
@@ -51,9 +52,11 @@ public class SecretController : ControllerBase
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Update(Secret secret)
+    public async Task<IActionResult> Update(SecretUpload model)
     {
+	Secret secret = new Secret(model);
 	secret.UserId = GetUserId();
+
 	var it = await _secretsRepo.GetOne(GetUserId(), secret.Id);
 	if (it == null)
 	{
