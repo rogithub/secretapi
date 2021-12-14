@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SecretAPI.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class SecretController : ControllerBase
@@ -33,7 +32,7 @@ public class SecretController : ControllerBase
     }
 
     
-    [HttpPost]
+    [HttpPost, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(SecretUpload model)
@@ -49,7 +48,7 @@ public class SecretController : ControllerBase
 	return CreatedAtAction(nameof(GetOne), new { secret = secret.Id }, secret);
     }
 
-    [HttpPut]
+    [HttpPut, Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(SecretUpload model)
@@ -68,13 +67,13 @@ public class SecretController : ControllerBase
     }
 
 
-    [HttpGet()]
+    [HttpGet(), Authorize(Roles = "Admin")]
     public Task<IEnumerable<Secret>> GetAll()
     {
         return _secretsRepo.GetAll(GetUserId());
     }
 
-    [HttpGet("{secret:guid}")]
+    [HttpGet("{secret:guid}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOne(Guid secret)
@@ -88,7 +87,7 @@ public class SecretController : ControllerBase
 	return Ok(it);
     }
 
-    [HttpDelete("{secret:guid}")]
+    [HttpDelete("{secret:guid}"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status410Gone)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid secret)
