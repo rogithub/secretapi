@@ -2,6 +2,11 @@ namespace SecretAPI.Models;
 
 public class Login
 {
+    public Login()
+    {
+	this.Username = string.Empty;
+	this.Password = string.Empty;
+    }
     public string Username { get; set; }
     public string Password { get; set; }
 }
@@ -10,11 +15,12 @@ public class User
 {
     public User()
     {
+	this.Username = string.Empty;
 	this.Id = Guid.NewGuid();
 	this.DateCreated = DateTime.Now;
     }
     public Guid Id { get; set; }
-
+    public string Username { get; set; }
     public DateTime DateCreated { get; set; }    
 }
 
