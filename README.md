@@ -16,6 +16,6 @@ bearer {token}
 
 ## Curl
 If you are testing localhost with https you can
-send -k to curl so that ignores self signet ssl certs
+use -k in curl so that ignores self signed ssl certs
 
 
