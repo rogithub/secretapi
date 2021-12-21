@@ -20,4 +20,4 @@ ENV TZ=America/Mexico_City
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY --from=build /app/SecretAPI/out ./
-ENTRYPOINT ["dotnet", "SecretAPI.dll"]
+ENTRYPOINT ["dotnet", "SecretAPI.dll", "--urls", "http://*:5000;http://*:5001"]
