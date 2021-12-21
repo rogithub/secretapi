@@ -4,6 +4,7 @@ WORKDIR /app
 # copy csproj and restore as distinct layers
 COPY SecretAPI.sln .
 COPY nuget.config .
+COPY SecretAPI/Db/secrets.db ./SecretAPI/Db/secrets.db
 COPY SecretAPI/*.csproj ./SecretAPI/
 RUN dotnet restore
 
