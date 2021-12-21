@@ -3,7 +3,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.IO;
 using Ro.SQLite.Data;
 using SecretAPI.Repos;
 using Microsoft.Extensions.Configuration;
@@ -44,9 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // IoC
 var connectionString = builder.Configuration.GetSection("DefaultConnection").Value;
 builder.Services.AddTransient<IDbAsync>((svc) => {
-    var current = Directory.GetCurrentDirectory();    
-    var path = Path.Combine(current, connectionString);    
-    return new Database(string.Format("Data Source={0}; Version=3;", path));
+    return new Database(connectionString);
 });
 builder.Services.AddScoped<ISecretsRepo, SecretsRepo>();
 builder.Services.AddScoped<IUsersRepo, UsersRepo>();
