@@ -19,6 +19,12 @@ If you are testing localhost with https you can
 use -k in curl so that ignores self signed ssl certs
 
 ## podman
-podman build -f Containerfile
+podman build -f Containerfile -t secret-api-img
+podman images
+podman run -d --name secret-api -p 5001:5001 secret-api-img
+podman ps
+podman logs secret-api
+
+
 
 
