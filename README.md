@@ -24,7 +24,7 @@ podman images
 podman run -d --name secret-api -p 5000:5000 secret-api-img
 podman ps
 podman logs secret-api
-podman run -it secret-api-img bash
+podman exec -it secret-api bash
 
 
 
