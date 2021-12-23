@@ -40,6 +40,9 @@ podman build -f Containerfile -t secret-api-img && \
 podman run -e JwtToken=${JWT_TOKEN} -d --name secret-api -p 5000:5000 secret-api-img
 ```
 
-
-
+# User & Groups
+``` bash
+id -u $USER
+id -g $USER
+```
 
