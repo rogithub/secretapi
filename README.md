@@ -42,6 +42,7 @@ podman run -e JwtToken=${JWT_TOKEN} -d --name secret-api -p 5000:5000 secret-api
 
 # User & Groups
 ``` bash
+id
 id -u $USER
 id -g $USER
 ```
