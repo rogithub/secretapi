@@ -14,7 +14,7 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
-COPY SecretAPI/Db/secrets.db ./Db/secrets.db
+#COPY SecretAPI/Db/secrets.db ./Db/secrets.db
 
 # Change timezone to local time
 ENV TZ=America/Mexico_City
