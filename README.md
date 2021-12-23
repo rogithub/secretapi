@@ -37,7 +37,9 @@ podman rmi secret-api-img
 # run
 ``` bash
 podman build -f Containerfile -t secret-api-img && \
-podman run -e JwtToken=${JWT_TOKEN} -d --name secret-api -p 5000:5000 secret-api-img
+podman run -e JwtToken=${JWT_TOKEN} \ 
+-e PUID=$(id -u $USER) -e PGID=$(id -g $USER) -u $USER \ 
+-d --name secret-api -p 5000:5000 secret-api-img
 ```
 
 # User & Groups
@@ -45,5 +47,10 @@ podman run -e JwtToken=${JWT_TOKEN} -d --name secret-api -p 5000:5000 secret-api
 id
 id -u $USER
 id -g $USER
+```
+
+# Usernamespaces
+``` bash
+lsns -t user
 ```
 
