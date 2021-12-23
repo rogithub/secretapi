@@ -29,12 +29,15 @@ podman exec -it secret-api bash
 ```
 # clean up
 ``` bash
-podman stop secret-api && podman rm secret-api && podman rmi secret-api-img
+podman stop secret-api && \
+podman rm secret-api && \
+podman rmi secret-api-img
 ```
 
 # run
 ``` bash
-podman build -f Containerfile -t secret-api-img && podman run -d --name secret-api -p 5000:5000 secret-api-img
+podman build -f Containerfile -t secret-api-img && \
+podman run -e JwtToken=${JWT_TOKEN} -d --name secret-api -p 5000:5000 secret-api-img
 ```
 
 

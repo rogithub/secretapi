@@ -64,7 +64,7 @@ public class AuthController : ControllerBase
 	};
 
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-   			   _configuration.GetSection("AppSettings:Token").Value));
+   			   _configuration.GetSection("JwtToken").Value));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
