@@ -12,7 +12,6 @@ https://system.data.sqlite.org/index.html/doc/trunk/www/downloads.wiki
 download
 https://system.data.sqlite.org/downloads/1.0.115.5/sqlite-netFx-source-1.0.115.5.zip
 ``` bash
-sudo apt-get install build-essential
 sudo apt-get update
 sudo apt-get install build-essential
 cd <source root>/Setup
