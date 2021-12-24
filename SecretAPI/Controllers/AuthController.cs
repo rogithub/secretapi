@@ -26,6 +26,7 @@ public class AuthController : ControllerBase
 		_configuration = configuration;
     }
 
+	[NonAction]
 	private Guid GetUserId()
     {
         var identity = HttpContext.User.Identity as ClaimsIdentity;	
@@ -36,9 +37,8 @@ public class AuthController : ControllerBase
 
         return Guid.Parse(claim.Value);
     }
-
-	[HttpPost, Authorize(Roles = "Admin")]
-	[HttpPost("chngpwd")]
+	
+	[HttpPost("ChngPwd"), Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ChngPwd(ChangePassword m)
@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
 		return Ok();
     }
 
-    [HttpPost("register")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register(Login login)
@@ -77,7 +77,7 @@ public class AuthController : ControllerBase
 		return Ok("CREATED. User Not Active. API administrator may or may not activate your account.");
     }
 
-    [HttpPost("login")]
+    [HttpPost("Login")]
     public async Task<ActionResult<string>> Login(Login model)
     {
 		if (!await _usersRepo.HasAccess(model))
@@ -91,6 +91,7 @@ public class AuthController : ControllerBase
 		return Ok(token);
     }
 
+	[NonAction]
     private string CreateToken(User user)
     {
 		List<Claim> claims = new List<Claim>
@@ -114,5 +115,4 @@ public class AuthController : ControllerBase
 
         return jwt;
     }
-
 }

@@ -43,7 +43,7 @@ public class UsersRepo : IUsersRepo
 
     public Task<User> GetOne(string username)
     {
-		string sql = "SELECT Id,Username,DateCreated FROM Users WHERE Username=@Username;";
+		string sql = "SELECT Id,Username,DateCreated,IsActive FROM Users WHERE Username=@Username;";
 		var cmd = sql.ToCmd
 		(
 			"@Username".ToParam(DbType.String, username)
@@ -87,7 +87,7 @@ public class UsersRepo : IUsersRepo
 
     public async Task<Guid> Create(Login model)
     {
-		string sql = "INSERT INTO Users (Id,Username,PasswordHash,PasswordSalt,DateCreated) VALUES (@Id,@Username,@PasswordHash, @PasswordSalt,@DateCreated);";
+		string sql = "INSERT INTO Users (Id,Username,PasswordHash,PasswordSalt,DateCreated,IsActive) VALUES (@Id,@Username,@PasswordHash, @PasswordSalt,@DateCreated,@IsActive);";
 		DateTime stamp = DateTime.Now;
 		Guid id = Guid.NewGuid();
 
@@ -98,7 +98,8 @@ public class UsersRepo : IUsersRepo
 			"@Username".ToParam(DbType.String, model.Username),
 			"@PasswordHash".ToParam(DbType.Binary, hash),
 			"@PasswordSalt".ToParam(DbType.Binary, salt),
-			"@DateCreated".ToParam(DbType.String, stamp.ToString("yyyy-MM-dd HH:mm:ss.fff"))	    
+			"@DateCreated".ToParam(DbType.String, stamp.ToString("yyyy-MM-dd HH:mm:ss.fff")),
+			"@IsActive".ToParam(DbType.Int32, 0)
 		);
 
 		await Db.ExecuteNonQuery(cmd);
