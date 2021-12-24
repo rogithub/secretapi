@@ -5,6 +5,7 @@ using System.Security.Claims;
 using SecretAPI.Models;
 using SecretAPI.Repos;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SecretAPI.Controllers;
 
@@ -21,47 +22,83 @@ public class AuthController : ControllerBase
 			  IConfiguration configuration)
     {
         _logger = logger;
-	_usersRepo = usersRepo;
-	_configuration = configuration;
+		_usersRepo = usersRepo;
+		_configuration = configuration;
     }
 
+	private Guid GetUserId()
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;	
+        if (identity == null) return Guid.Empty;
 
-    [HttpPost]
+        var claim = identity.FindFirst("Id");
+        if (claim == null) return Guid.Empty;	
+
+        return Guid.Parse(claim.Value);
+    }
+
+	[HttpPost, Authorize(Roles = "Admin")]
+	[HttpPost("chngpwd")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ChngPwd(ChangePassword m)
+    {
+		if (m.IsValid() == false)
+		{
+			return BadRequest("Not equal.");
+		}
+
+		try {
+			await _usersRepo.ChangePassword(GetUserId(), m);
+		}
+		catch {
+			return BadRequest("something went wrong.");
+		}
+		return Ok();
+    }
+
+    [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register(Login login)
     {
-	try {
-            await _usersRepo.Create(login);
-	}
-	catch {
-	    return BadRequest("Username already exists.");
-	}
-	return Ok();
+		if (login.IsValid() == false)
+		{
+			return BadRequest("Username or Passwrod too long or too short.");
+		}
+
+		try {
+			await _usersRepo.Create(login);
+		}
+		catch {
+			return BadRequest("Username already exists.");
+		}
+
+		return Ok("CREATED. User Not Active. API administrator may or may not activate your account.");
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<string>> Login(Login model)
     {
-	if (!await _usersRepo.HasAccess(model))
-	{
-	    return BadRequest("User not found.");
-	}
+		if (!await _usersRepo.HasAccess(model))
+		{
+			return BadRequest("User not found.");
+		}
 
-	var user = await _usersRepo.GetOne(model.Username);
+		var user = await _usersRepo.GetOne(model.Username);
 
-	string token = CreateToken(user);
-	return Ok(token);
+		string token = CreateToken(user);
+		return Ok(token);
     }
 
     private string CreateToken(User user)
     {
-	List<Claim> claims = new List<Claim>
-	{
-	    new Claim(ClaimTypes.Name, user.Username),
-	    new Claim(ClaimTypes.Role, "Admin"),
-	    new Claim("Id", user.Id.ToString())
-	};
+		List<Claim> claims = new List<Claim>
+		{
+			new Claim(ClaimTypes.Name, user.Username),
+			new Claim(ClaimTypes.Role, "Admin"),
+			new Claim("Id", user.Id.ToString())
+		};
 
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
    			   _configuration.GetSection("JwtToken").Value));
@@ -74,6 +111,7 @@ public class AuthController : ControllerBase
 			signingCredentials: creds);
 
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
         return jwt;
     }
 

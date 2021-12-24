@@ -17,18 +17,18 @@ public class SecretController : ControllerBase
     public SecretController(ILogger<SecretController> logger, ISecretsRepo secretsRepo)
     {
         _logger = logger;
-	_secretsRepo = secretsRepo;
+	    _secretsRepo = secretsRepo;
     }
 
     private Guid GetUserId()
     {
-	var identity = HttpContext.User.Identity as ClaimsIdentity;	
-	if (identity == null) return Guid.Empty;
+        var identity = HttpContext.User.Identity as ClaimsIdentity;	
+        if (identity == null) return Guid.Empty;
 
-	var claim = identity.FindFirst("Id");
-	if (claim == null) return Guid.Empty;	
+        var claim = identity.FindFirst("Id");
+        if (claim == null) return Guid.Empty;	
 
-	return Guid.Parse(claim.Value);
+        return Guid.Parse(claim.Value);
     }
 
     
@@ -38,14 +38,14 @@ public class SecretController : ControllerBase
     public async Task<IActionResult> Create(SecretUpload model)
     {
         Secret secret = new Secret(model);
-	secret.UserId = GetUserId();
+	    secret.UserId = GetUserId();
         var value = await _secretsRepo.Create(secret);
-	if (value != 1)
-	{
-	    return BadRequest();
-	}
+        if (value != 1)
+        {
+            return BadRequest();
+        }
 
-	return CreatedAtAction(nameof(GetOne), new { secret = secret.Id }, secret);
+	    return CreatedAtAction(nameof(GetOne), new { secret = secret.Id }, secret);
     }
 
     [HttpPut, Authorize(Roles = "Admin")]
@@ -53,17 +53,17 @@ public class SecretController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update(SecretUpload model)
     {
-	Secret secret = new Secret(model);
-	secret.UserId = GetUserId();
+        Secret secret = new Secret(model);
+        secret.UserId = GetUserId();
 
-	var it = await _secretsRepo.GetOne(GetUserId(), secret.Id);
-	if (it == null)
-	{
-	    return NotFound();
-	}
+        var it = await _secretsRepo.GetOne(GetUserId(), secret.Id);
+        if (it == null)
+        {
+            return NotFound();
+        }
 	
         var val = await _secretsRepo.Update(secret);
-	return Ok(val);
+	    return Ok(val);
     }
 
 
@@ -79,12 +79,12 @@ public class SecretController : ControllerBase
     public async Task<IActionResult> GetOne(Guid secret)
     {        
         var it = await _secretsRepo.GetOne(GetUserId(), secret);
-	if (it == null)
-	{
-	    return NotFound();
-	}
+        if (it == null)
+        {
+            return NotFound();
+        }
 
-	return Ok(it);
+        return Ok(it);
     }
 
     [HttpDelete("{secret:guid}"), Authorize(Roles = "Admin")]
@@ -93,13 +93,13 @@ public class SecretController : ControllerBase
     public async Task<IActionResult> Delete(Guid secret)
     {        
         var it = await _secretsRepo.GetOne(GetUserId(), secret);
-	if (it == null)
-	{
-	    return NotFound();
-	}
+        if (it == null)
+        {
+            return NotFound();
+        }
 
-	await _secretsRepo.Delete(GetUserId(), secret);
-	return StatusCode(StatusCodes.Status410Gone);
+        await _secretsRepo.Delete(GetUserId(), secret);
+        return StatusCode(StatusCodes.Status410Gone);
     }
 
 }
