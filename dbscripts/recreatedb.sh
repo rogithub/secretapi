@@ -11,7 +11,7 @@ fi
 
 remove_file_if_exists () {    
     if [ -f "$1" ]; then
-	rm $1
+	    rm $1
     fi
 }
 
