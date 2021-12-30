@@ -52,7 +52,7 @@ podman rmi secret-api-img
 
 ## run
 ``` bash
-podman build -f Containerfile -t secret-api-img && podman run -e JwtToken=${JWT_TOKEN} -v $(pwd)/SecretAPI/Db:/app/Db -d --name secret-api -p 5000:5000 secret-api-img
+podman build -f Containerfile -t secret-api-img && podman run -e JWT_TOKEN -v $(pwd)/SecretAPI/Db:/app/Db -d --name secret-api -p 5000:5000 secret-api-img
 ```
 
 ## User & Groups
