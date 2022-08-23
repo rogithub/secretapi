@@ -3,6 +3,7 @@
 DBFILE="secrets.db"
 SCRIPTFILE="secrets.sql"
 PROJ_DIR="SecretAPI"
+DB_DIR="Db"
 
 if [ ! -f "./$SCRIPTFILE" ]; then
     echo "./$SCRIPTFILE does not exist."
@@ -15,7 +16,12 @@ remove_file_if_exists () {
     fi
 }
 
-OLD="../$PROJ_DIR/Db/$DBFILE"
+if [ ! -d "../$PROJ_DIR/$DB_DIR" ]; then
+    mkdir "../$PROJ_DIR/$DB_DIR"
+fi
+
+
+OLD="../$PROJ_DIR/$DB_DIR/$DBFILE"
 remove_file_if_exists $OLD
 
 remove_file_if_exists "./$DBFILE"
